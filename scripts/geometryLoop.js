@@ -14,7 +14,7 @@ import * as M3 from "./matrices3D.js";
 import * as M4 from "./matrices4D.js";
 //const GravConst = 6.674 * Math.pow(10, -11);
 const GravConst = 6.674 * Math.pow(10, -2);
-const timeStep = 5.0;
+const timeStep = 0.4;
 
 const getAcceleration = function(force, mass) {
 	return [

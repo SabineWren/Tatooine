@@ -35,72 +35,37 @@ State.canvas.oncontextmenu = function(event) {
 window.onload = async function() {
 	const sphereStr = await FetchText(new Error(), "../objects/sphere.obj");
 	const mesh = new Loader.Mesh(sphereStr);
-	console.log(mesh);
+	//console.log(mesh);
 	
 	const models = [
 		{
-			mass: 4.5,
+			mass: 5,
 			matrix: M4.GetIdentity()
 				.Translate(-10.0, 0.0, -5.0)
 				.Scale(0.2, 0.2, 0.2),
 			mesh: mesh,
 			name: "tatoo1",
-			velocity: [0.0, 0.0, 0.0],
-			//velocity: [0.0, 0.0, Math.sqrt(GravConst * 9.0 / 20.0) / 2],
+			velocity: [0.0, 0.0, 0.1],
 		},
 		{
-			mass: 4.5,
+			mass: 6,
 			matrix: M4.GetIdentity()
 				.Translate(10.0, 0.0, -5.0)
-				.Scale(0.2, 0.2, 0.2),
+				.Scale(0.25, 0.25, 0.25),
 			mesh: mesh,
 			name: "tatoo2",
-			velocity: [0.0, 0.0, 0.0],
-			//velocity: [0.0, 0.0, -Math.sqrt(GravConst * 9.0 / 20.0) / 2],
+			velocity: [0.0, 0.0, -0.09],
 		},
 		{
-			mass: 1,
+			mass: 0.5,
 			matrix: M4.GetIdentity()
 				.Translate(-100.0, 0.0, -5.0)
-				.Scale(0.1, 0.1, 0.1),
+				.Scale(0.08, 0.08, 0.08),
 			mesh: mesh,
 			name: "tatooine",
-			velocity: [0.0, 0.0, 0.0],
+			velocity: [0.0, 0.0, 0.08],
 		}
 	];
-	
-	const allPairs = models.map(function(x, index) {
-		return models
-			.filter( (y, i) => i > index)
-			.map(y => [x, y])
-	}).reduce((acc, val) => acc.concat(val), []);
-	
-	//This doesn't work. It assumes V = sum of paired Vs, which is false.
-	allPairs.forEach(function(pair) {
-		const a = pair[0];
-		const b = pair[1];
-		
-		const positionA = M4.GetPosition(a.matrix);
-		const positionB = M4.GetPosition(b.matrix);
-		
-		//barycentre
-		const totalMass = a.mass + b.mass;
-		const posAWeighted = M3.Scale(positionA, a.mass / totalMass);
-		const posBWeighted = M3.Scale(positionB, b.mass / totalMass);
-		const baryCentre = M3.Add(posAWeighted, posBWeighted);
-		
-		//relative distances
-		const rRelA = M3.Magnitude(M3.Minus(baryCentre, positionA));
-		const rRelB = M3.Magnitude(M3.Minus(baryCentre, positionB));
-		
-		//initial speeds
-		const vA = (b.mass / totalMass) * Math.sqrt(GravConst * b.mass / rRelA);
-		const vB = (a.mass / totalMass) * Math.sqrt(GravConst * a.mass / rRelB);
-		
-		a.velocity[2] += vA;
-		b.velocity[2] -= vB;
-	});
-	models[2].velocity[2] = -0.07//since allPairs doesn't work
 
 	const shaderVertex   = Create.Shader(gl, gl.VERTEX_SHADER,   ShaderSourceVertex);
 	const shaderFragment = Create.Shader(gl, gl.FRAGMENT_SHADER, ShaderSourceFragment);
@@ -138,14 +103,19 @@ window.onload = async function() {
 
 	const renderIfNeeded = function() {
 		ResizeCanvas(State);
-		UpdateGeometry(models, State);
-		if(State.needToRender){
+		if(State.needToRender) {
 			State.needToRender = false;
 			Input.UpdateViewMat();
 			Draw(locations, models, program, State);
 		}
 		window.requestAnimationFrame(renderIfNeeded);
 	}
+	UpdateGeometry(models, State);
 	renderIfNeeded();
+	
+	for(;;) {
+		await new Promise(resolve => setTimeout(resolve, 0));
+		UpdateGeometry(models, State);
+	}
 }();
 
