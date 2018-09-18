@@ -41,29 +41,38 @@ window.onload = async function() {
 		{
 			mass: 5,
 			matrix: M4.GetIdentity()
-				.Translate(-10.0, 0.0, -5.0)
+				.Translate(-6.5, 0.0, -5.0)
 				.Scale(0.2, 0.2, 0.2),
 			mesh: mesh,
 			name: "tatoo1",
-			velocity: [0.0, 0.0, 0.1],
+			velocity: [0.0, 0.0, 0.154],
 		},
 		{
 			mass: 6,
 			matrix: M4.GetIdentity()
-				.Translate(10.0, 0.0, -5.0)
+				.Translate(6.5, 0.0, -5.0)
 				.Scale(0.25, 0.25, 0.25),
 			mesh: mesh,
 			name: "tatoo2",
-			velocity: [0.0, 0.0, -0.09],
+			velocity: [0.0, 0.0, -0.13],
 		},
 		{
-			mass: 0.5,
+			mass: 0.15,
 			matrix: M4.GetIdentity()
-				.Translate(-100.0, 0.0, -5.0)
+				.Translate(-150.0, 0.0, -5.0)
 				.Scale(0.08, 0.08, 0.08),
 			mesh: mesh,
 			name: "tatooine",
-			velocity: [0.0, 0.0, 0.08],
+			velocity: [0.0, 0.0, 0.06],
+		},
+		{
+			mass: 0.01111111,
+			matrix: M4.GetIdentity()
+				.Translate(-140.0, 0.0, -5.0)
+				.Scale(0.015, 0.015, 0.015),
+			mesh: mesh,
+			name: "moon",
+			velocity: [0.0, 0.0, 0.09],
 		}
 	];
 

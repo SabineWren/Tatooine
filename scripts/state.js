@@ -37,7 +37,7 @@ const State = {
 		//model matrices aren't global state
 		//proj set in resize
 		view: M4.GetIdentity()
-			.Translate(0.0, 80.0, -10.0)
+			.Translate(0.0, 100.0, -10.0)
 			.RotateX(Math.PI / 2.0)
 	},
 	mouse: {
