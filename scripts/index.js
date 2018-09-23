@@ -9,8 +9,8 @@
 	
 	@license-end
 */
+import { MarshalModel, UnmarshalModel } from "./channels.js";
 import { FetchText } from "./fetch.js";
-import { UpdateGeometry } from "./geometryLoop.js";
 import * as Loader from "../node_modules/webgl-obj-loader/src/index.js";
 import * as Input from "./input.js";
 import { GravConst } from "./integrate.js";
@@ -111,18 +111,24 @@ window.onload = async function() {
 	document.onmousemove = Input.HandleMouseMove;
 	document.onmouseup   = Input.HandleMouseUp;
 
+	const geometryWorker = new Worker(
+		"/scripts/geometryWorker.js", {type:"module"});
+	geometryWorker.onmessage = function(e) {
+		const nextState = e.data.map(UnmarshalModel);
+		for(let i = 0; i < models.length; i++) {
+			models[i].matrix = nextState[i].matrix;
+			models[i].velocity = nextState[i].velocity;
+		}
+	};
+	geometryWorker.postMessage(models.map(MarshalModel));
+
 	const render = function() {
 		ResizeCanvas(State);
 		Input.UpdateViewMat();
 		Draw(locations, models, program, State);
 		window.requestAnimationFrame(render);
+		geometryWorker.postMessage(true);
 	}
-	UpdateGeometry(models);
 	render();
-	
-	for(;;) {
-		await new Promise(resolve => setTimeout(resolve, 0));
-		UpdateGeometry(models, State);
-	}
 }();
 

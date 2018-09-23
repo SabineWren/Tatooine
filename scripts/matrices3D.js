@@ -20,6 +20,7 @@ const CreateVector = function(v3) {
 	v3.RotateAroundAxis = rotateAroundAxis;
 	v3.Subtract = subtract;
 	v3.Scale = scale;
+	v3.ToArray = toArray;
 	return v3;
 };
 
@@ -113,5 +114,10 @@ const subtract = function(b) {
 		a[1] - b[1],
 		a[2] - b[2],
 	]);
+};
+
+const toArray = function() {
+	const v = this;
+	return [v[0], v[1], v[2]];
 };
 

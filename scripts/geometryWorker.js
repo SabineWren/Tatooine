@@ -9,11 +9,11 @@
 	
 	@license-end
 */
-export { UpdateGeometry };
+import { MarshalModel, UnmarshalModel } from "./channels.js";
 import * as Integrate from "./integrate.js";
 import * as M3 from "./matrices3D.js";
 import * as M4 from "./matrices4D.js";
-const timeStep = 0.4;
+const timeStep = 0.02;
 
 const getStats = function(m, p1) {
 	return {
@@ -39,4 +39,21 @@ const UpdateGeometry = function(models) {
 		models[i].velocity = nextState[i][1];
 	}
 };
+
+let models;
+const init = function(e) {
+	models = e.data.map(UnmarshalModel);
+	onmessage = update;
+	setInterval(function(){
+		for(let i = 0; i < 100; i++) {
+			UpdateGeometry(models);
+		}
+	}, 0);
+};
+
+const update = function(e) {
+	postMessage(models.map(MarshalModel));
+};
+
+onmessage = init;
 
