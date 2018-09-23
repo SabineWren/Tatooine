@@ -23,6 +23,7 @@ import { ShaderSourceVertex } from "../shaders/vertex.js";
 import { ShaderSourceFragment } from "../shaders/frag.js";
 import { State } from "./state.js";
 
+const root = "/";
 State.canvas = document.getElementById("c");
 State.gl = State.canvas.getContext("webgl2");
 const gl = State.gl;
@@ -34,7 +35,7 @@ State.canvas.oncontextmenu = function(event) {
 };
 
 window.onload = async function() {
-	const sphereStr = await FetchText(new Error(), "../objects/sphere.obj");
+	const sphereStr = await FetchText(new Error(), root + "objects/sphere.obj");
 	const mesh = new Loader.Mesh(sphereStr);
 	//console.log(mesh);
 	
@@ -111,8 +112,7 @@ window.onload = async function() {
 	document.onmousemove = Input.HandleMouseMove;
 	document.onmouseup   = Input.HandleMouseUp;
 
-	const geometryWorker = new Worker(
-		"/scripts/geometryWorker.js", {type:"module"});
+	const geometryWorker = new Worker(root + "scripts/bundleGeometryWorker.js");
 	geometryWorker.onmessage = function(e) {
 		const nextState = e.data.map(UnmarshalModel);
 		for(let i = 0; i < models.length; i++) {
