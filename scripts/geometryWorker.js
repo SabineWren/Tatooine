@@ -45,7 +45,7 @@ const init = function(e) {
 	models = e.data.map(UnmarshalModel);
 	onmessage = update;
 	setInterval(function(){
-		for(let i = 0; i < 100; i++) {
+		for(let i = 0; i < 120; i++) {
 			UpdateGeometry(models);
 		}
 	}, 0);
