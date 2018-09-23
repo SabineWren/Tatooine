@@ -19,7 +19,6 @@ import { State } from "./state.js";
 
 const UpdateViewMat = function() {
 	if(State.keycount === 0) { return; }
-	else { State.needToRender = true; }
 	
 	const k = State.keys
 	const m = State.matrices;
@@ -97,7 +96,6 @@ const HandleKeyDown = function(event) {
 		default:
 			break;
 	}
-	State.needToRender = true;
 };
 
 const HandleKeyUp = function(event) {
@@ -160,15 +158,13 @@ const HandleMouseMove = function(event) {
 	const sX = Math.sin(-rX);
 	const sY = Math.sin(-rY);
 	
-	const rotYX = [
+	const rotYX = M4.CreateMatrix([
 		 cY, sY*sX, sY*cX, 0.0,
 		0.0,    cX,   -sX, 0.0,
 		-sY, cY*sX, cY*cX, 0.0,
 		0.0,   0.0,   0.0, 1.0
-	];
-	State.matrices.view = M4.Multiply(rotYX, State.matrices.view);
-	
-	State.needToRender = true;
+	]);
+	State.matrices.view = rotYX.Multiply(State.matrices.view);
 };
 
 const HandleMouseUp = function(event) {

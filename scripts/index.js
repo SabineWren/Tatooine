@@ -10,9 +10,10 @@
 	@license-end
 */
 import { FetchText } from "./fetch.js";
-import { GravConst, UpdateGeometry } from "./geometryLoop.js";
+import { UpdateGeometry } from "./geometryLoop.js";
 import * as Loader from "../node_modules/webgl-obj-loader/src/index.js";
 import * as Input from "./input.js";
+import { GravConst } from "./integrate.js";
 import * as M3 from "./matrices3D.js";
 import * as M4 from "./matrices4D.js";
 import { Draw } from "./renderLoop.js";
@@ -39,40 +40,40 @@ window.onload = async function() {
 	
 	const models = [
 		{
-			mass: 5,
+			mass: 5 * Math.pow(10, 9),
 			matrix: M4.GetIdentity()
-				.Translate(-6.5, 0.0, -5.0)
-				.Scale(0.2, 0.2, 0.2),
+				.Scale(0.2, 0.2, 0.2)
+				.Translate(-6.5, 0.0, -5.0),
 			mesh: mesh,
 			name: "tatoo1",
-			velocity: [0.0, 0.0, 0.154],
+			velocity: M3.CreateVector([0.0, 0.0, 0.154]),
 		},
 		{
-			mass: 6,
+			mass: 6 * Math.pow(10, 9),
 			matrix: M4.GetIdentity()
-				.Translate(6.5, 0.0, -5.0)
-				.Scale(0.25, 0.25, 0.25),
+				.Scale(0.25, 0.25, 0.25)
+				.Translate(6.5, 0.0, -5.0),
 			mesh: mesh,
 			name: "tatoo2",
-			velocity: [0.0, 0.0, -0.13],
+			velocity: M3.CreateVector([0.0, 0.0, -0.13]),
 		},
 		{
-			mass: 0.15,
+			mass: 0.15 * Math.pow(10, 9),
 			matrix: M4.GetIdentity()
-				.Translate(-150.0, 0.0, -5.0)
-				.Scale(0.08, 0.08, 0.08),
+				.Scale(0.08, 0.08, 0.08)
+				.Translate(-150.0, 0.0, -5.0),
 			mesh: mesh,
 			name: "tatooine",
-			velocity: [0.0, 0.0, 0.06],
+			velocity: M3.CreateVector([0.0, 0.0, 0.06]),
 		},
 		{
-			mass: 0.01111111,
+			mass: 0.01111111 * Math.pow(10, 9),
 			matrix: M4.GetIdentity()
-				.Translate(-140.0, 0.0, -5.0)
-				.Scale(0.015, 0.015, 0.015),
+				.Scale(0.015, 0.015, 0.015)
+				.Translate(-140.0, 0.0, -5.0),
 			mesh: mesh,
 			name: "moon",
-			velocity: [0.0, 0.0, 0.09],
+			velocity: M3.CreateVector([0.0, 0.0, 0.09]),
 		}
 	];
 
@@ -110,17 +111,14 @@ window.onload = async function() {
 	document.onmousemove = Input.HandleMouseMove;
 	document.onmouseup   = Input.HandleMouseUp;
 
-	const renderIfNeeded = function() {
+	const render = function() {
 		ResizeCanvas(State);
-		if(State.needToRender) {
-			State.needToRender = false;
-			Input.UpdateViewMat();
-			Draw(locations, models, program, State);
-		}
-		window.requestAnimationFrame(renderIfNeeded);
+		Input.UpdateViewMat();
+		Draw(locations, models, program, State);
+		window.requestAnimationFrame(render);
 	}
-	UpdateGeometry(models, State);
-	renderIfNeeded();
+	UpdateGeometry(models);
+	render();
 	
 	for(;;) {
 		await new Promise(resolve => setTimeout(resolve, 0));

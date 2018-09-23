@@ -9,29 +9,35 @@
 	
 	@license-end
 */
-export { GetIdentity, GetPosition };
-export { Multiply, Transform, Transpose };
+export { GetPosition };
+export { CreateMatrix, GetIdentity, Transform };
 export { Proj };
 import * as M3 from "./matrices3D.js";
 
+const CreateMatrix = function(arr) {
+	arr.Multiply = multiply;
+	arr.RotateX = rotateX;
+	arr.RotateY = rotateY;
+	arr.RotateZ = rotateZ;
+	arr.Scale = scale;
+	arr.Translate = translate;
+	arr.Transpose = transpose;
+	return arr;
+};
+
 const GetIdentity = function(s) {
-	const m = [
+	return CreateMatrix([
 		1.0, 0.0, 0.0, 0.0,
 		0.0, 1.0, 0.0, 0.0,
 		0.0, 0.0, 1.0, 0.0,
 		0.0, 0.0, 0.0, 1.0,
-	];
-	m.Translate = translate;
-	m.RotateX = rotateX;
-	m.RotateY = rotateY;
-	m.RotateZ = rotateZ;
-	m.Scale = scale;
-	return m;
+	]);
 };
 
-const GetPosition = m => [m[12], m[13], m[14], m[15]];
+const GetPosition = m => M3.CreateVector([m[12], m[13], m[14], m[15]]);
 
-const Multiply = function(a, b) {
+const multiply = function(b) {
+	const a = this;
 	const a00 = a[0 * 4 + 0];
 	const a01 = a[0 * 4 + 1];
 	const a02 = a[0 * 4 + 2];
@@ -64,7 +70,7 @@ const Multiply = function(a, b) {
 	const b31 = b[3 * 4 + 1];
 	const b32 = b[3 * 4 + 2];
 	const b33 = b[3 * 4 + 3];
-	const m = [
+	return CreateMatrix([
 		b00 * a00 + b01 * a10 + b02 * a20 + b03 * a30,
 		b00 * a01 + b01 * a11 + b02 * a21 + b03 * a31,
 		b00 * a02 + b01 * a12 + b02 * a22 + b03 * a32,
@@ -81,66 +87,56 @@ const Multiply = function(a, b) {
 		b30 * a01 + b31 * a11 + b32 * a21 + b33 * a31,
 		b30 * a02 + b31 * a12 + b32 * a22 + b33 * a32,
 		b30 * a03 + b31 * a13 + b32 * a23 + b33 * a33,
-	];
-	m.Translate = translate;
-	m.RotateX = rotateX;
-	m.RotateY = rotateY;
-	m.RotateZ = rotateZ;
-	m.Scale = scale;
-	return m;
+	]);
 };
 
 const Proj = function(aspectR, far, fov, near) {
 	const dist = 1.0 / Math.tan(fov/2.0);
 	const rangeInv = 1.0 / (near - far);
-	return [
+	return CreateMatrix([
 		dist / aspectR, 0.0,  0.0,                         0.0,
 		0.0,            dist, 0.0,                         0.0,
 		0.0,            0.0,  (near + far) * rangeInv,    -1.0,
 		0.0,            0.0,  far * near * rangeInv * 2.0, 0.0,
-	];
+	]);
 };
 const rotateX = function(radians) {
-	const m = this;
 	const c = Math.cos(radians);
 	const s = Math.sin(radians);
-	return Multiply([
+	return CreateMatrix([
 		 1.0, 0.0,  0.0, 0.0,
 		 0.0, c,   -s,   0.0,
 		 0.0, s,    c,   0.0,
 		 0.0, 0.0,  0.0, 1.0,
-	], m);
+	]).Multiply(this);
 };
 const rotateY = function(radians){
-	const m = this;
 	const c = Math.cos(radians);
 	const s = Math.sin(radians);
-	return Multiply([
+	return CreateMatrix([
 		  c,    0.0, s,   0.0,
 		  0.0,  1.0, 0.0, 0.0,
 		 -s,    0.0, c,   0.0,
 		  0.0,  0.0, 0.0, 1.0,
-	], m);
+	]).Multiply(this);
 };
 const rotateZ = function(radians){
-	const m = this;
 	const c = Math.cos(radians);
 	const s = Math.sin(radians);
-	return Multiply([
+	return CreateMatrix([
 		c,  -s,   0.0, 0.0,
 		s,   c,   0.0, 0.0,
 		0.0, 0.0, 1.0, 0.0,
 		0.0, 0.0, 0.0, 1.0,
-	], m);
+	]).Multiply(this);
 };
 const scale = function(sx, sy, sz) {
-	const m = this;
-	return Multiply(m, [
+	return CreateMatrix([
 		sx, 0,  0,  0,
 		0,  sy, 0,  0,
 		0,  0,  sz, 0,
 		0,  0,  0,  1,
-	]);
+	]).Multiply(this);
 }
 
 const Transform = function(m, v) {
@@ -160,29 +156,30 @@ const Transform = function(m, v) {
 	const m31 = m[3 * 4 + 1];
 	const m32 = m[3 * 4 + 2];
 	const m33 = m[3 * 4 + 3];
-	return [
+	return CreateMatrix([
 		m00 * v[0] + m01 * v[1] + m02 * v[2] + m03 * v[3],
 		m10 * v[0] + m11 * v[1] + m12 * v[2] + m13 * v[3],
 		m20 * v[0] + m21 * v[1] + m22 * v[2] + m23 * v[3],
 		m30 * v[0] + m31 * v[1] + m32 * v[2] + m33 * v[3],
-	];
+	]);
 };
 
 const translate = function(tx, ty, tz) {
-	const m = this;
-	return Multiply([
+	return CreateMatrix([
 		1,  0,  0,  0,
 		0,  1,  0,  0,
 		0,  0,  1,  0,
 		tx, ty, tz, 1,
-	], m);
+	]).Multiply(this);
 };
 
-const Transpose = function(m) {
-	return [
+const transpose = function() {
+	const m = this;
+	return CreateMatrix([
 		m[0], m[4], m[8],  m[12],
 		m[1], m[5], m[9],  m[13],
 		m[2], m[6], m[10], m[14],
 		m[3], m[7], m[11], m[15]
-	];
+	]);
 };
+
