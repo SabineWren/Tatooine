@@ -28,15 +28,15 @@ const getNextModel = function(model, models) {
 		.filter(m => m.name !== model.name)
 		.map(getStats);
 	
-	const [dFinal, vFinal] = Integrate.MidpointEuler(model.matrix, model.velocity, timeStep, otherBodies);
+	const [dFinal, vFinal] = Integrate.RK4(model.matrix, model.velocity, timeStep, otherBodies);
 	return [dFinal, vFinal];
 };
 
 const UpdateGeometry = function(models) {
 	const nextState = models.map(m => getNextModel(m, models));
 	for(let i = 0; i < models.length; i++) {
-		models[i].matrix = nextState[i][1];
-		models[i].velocity = nextState[i][0];
+		models[i].matrix = nextState[i][0];
+		models[i].velocity = nextState[i][1];
 	}
 };
 
