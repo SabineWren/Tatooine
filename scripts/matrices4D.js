@@ -11,7 +11,7 @@
 */
 export { GetPosition };
 export { CreateMatrix, GetIdentity, Transform };
-export { Proj };
+export { LookAt, Proj };
 import * as M3 from "./matrices3D.js";
 
 const CreateMatrix = function(arr) {
@@ -36,6 +36,32 @@ const GetIdentity = function(s) {
 };
 
 const GetPosition = m => M3.CreateVector([m[12], m[13], m[14], m[15]]);
+
+const LookAt = function(eye, centre) {
+	const up = [0.0, 1.0, 0.0];
+	const faceRaw = M3.CreateVector([
+		centre[0] - eye[0],
+		centre[1] - eye[1],
+		centre[2] - eye[2],
+	]);
+	const f = faceRaw.Divide(faceRaw.Magnitude());
+	
+	const s = f.Cross(up);
+	const sNorm = s.Divide(s.Magnitude());
+	const u = sNorm.Cross(f);
+	
+	const e = M3.CreateVector(eye);
+	const tx = s.Dot(e) * -1.0;
+	const ty = u.Dot(e) * -1.0;
+	const tz = f.Dot(e);
+	
+	return CreateMatrix([
+		s[0], u[0], -f[0], 0,
+		s[1], u[1], -f[1], 0,
+		s[2], u[2], -f[2], 0,
+		tx,    ty,     tz, 1
+	]);
+};
 
 const multiply = function(b) {
 	const a = this;
@@ -125,10 +151,10 @@ const rotateZ = function(radians){
 	const c = Math.cos(radians);
 	const s = Math.sin(radians);
 	return CreateMatrix([
-		c,  -s,   0.0, 0.0,
-		s,   c,   0.0, 0.0,
-		0.0, 0.0, 1.0, 0.0,
-		0.0, 0.0, 0.0, 1.0,
+		 c,   s,   0.0, 0.0,
+		-s,   c,   0.0, 0.0,
+		 0.0, 0.0, 1.0, 0.0,
+		 0.0, 0.0, 0.0, 1.0,
 	]).Multiply(this);
 };
 const scale = function(sx, sy, sz) {
