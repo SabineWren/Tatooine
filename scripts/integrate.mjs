@@ -29,8 +29,8 @@ const MidpointEulerMutDV = function(getAccel, d, v, dt) {
 const RK4MutDV = function(getAccel, d, v, dt) {
 	const k1 = getAccel(d);//accel at start
 	
-	const v2 = v.Add( k1.Scale(dt / 2.0) );
-	const d2 = d.Add( v2.ScaleMut(dt / 2.0) );
+	const v2 = k1.Scale(dt / 2.0).AddMut(v);
+	const d2 = v2.ScaleMut(dt / 2.0).AddMut(d);
 	const k2 = getAccel(d2);//accel in middle
 	
 	const v3 = k2.Scale(dt / 2.0).AddMut(v);
