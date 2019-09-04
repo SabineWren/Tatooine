@@ -1,7 +1,7 @@
 /*
 	@license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt
 	
-	Copyright (C) 2018 SabineWren
+	Copyright (C) 2018-2019 SabineWren
 	https://github.com/SabineWren
 	
 	GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
@@ -9,19 +9,18 @@
 	
 	@license-end
 */
-import { MarshalModel, UnmarshalModel } from "./channels.js";
-import { FetchText } from "./fetch.js";
+import { MarshalModel, UnmarshalModel } from "./channels.mjs";
+import { FetchText } from "./fetch.mjs";
 import * as Loader from "../node_modules/webgl-obj-loader/src/index.js";
-import * as Input from "./input.js";
-import { GravConst } from "./integrate.js";
-import * as M3 from "./matrices3D.js";
-import * as M4 from "./matrices4D.js";
-import { Draw } from "./renderLoop.js";
-import { ResizeCanvas } from "./resize.js";
-import * as Create from "../shaders/create.js";
-import { ShaderSourceVertex } from "../shaders/vertex.js";
-import { ShaderSourceFragment } from "../shaders/frag.js";
-import { State } from "./state.js";
+import * as Input from "./input.mjs";
+import * as M3 from "./matrices3D.mjs";
+import * as M4 from "./matrices4D.mjs";
+import { Draw } from "./renderLoop.mjs";
+import { ResizeCanvas } from "./resize.mjs";
+import * as Create from "../shaders/create.mjs";
+import { ShaderSourceVertex } from "../shaders/vertex.mjs";
+import { ShaderSourceFragment } from "../shaders/frag.mjs";
+import { State } from "./state.mjs";
 
 const root = "/";
 State.canvas = document.getElementById("c");
@@ -112,7 +111,11 @@ window.onload = async function() {
 	document.onmousemove = Input.HandleMouseMove;
 	document.onmouseup   = Input.HandleMouseUp;
 
-	const geometryWorker = new Worker(root + "scripts/bundleGeometryWorker.js");
+	console.log("creating worker");
+	const geometryWorker = new Worker(
+		root + "scripts/geometryWorker.mjs",
+		{ type: "module" }
+	);
 	geometryWorker.onmessage = function(e) {
 		const nextState = e.data.map(UnmarshalModel);
 		for(let i = 0; i < models.length; i++) {

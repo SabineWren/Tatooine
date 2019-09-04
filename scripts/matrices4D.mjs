@@ -1,7 +1,7 @@
 /*
 	@license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt
 	
-	Copyright (C) 2018 SabineWren
+	Copyright (C) 2018-2019 SabineWren
 	https://github.com/SabineWren
 	
 	GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
@@ -12,7 +12,7 @@
 export { GetPosition };
 export { CreateMatrix, GetIdentity, Transform };
 export { LookAt, Proj };
-import * as M3 from "./matrices3D.js";
+import * as M3 from "./matrices3D.mjs";
 
 const CreateMatrix = function(arr) {
 	arr.Multiply = multiply;

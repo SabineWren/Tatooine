@@ -1,6 +1,6 @@
 export { MarshalModel, UnmarshalModel };
-import * as M3 from "./matrices3D.js";
-import * as M4 from "./matrices4D.js";
+import * as M3 from "./matrices3D.mjs";
+import * as M4 from "./matrices4D.mjs";
 
 //web workers cannot pass functions
 const MarshalModel = function(model) {
