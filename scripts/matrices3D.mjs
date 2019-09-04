@@ -12,19 +12,16 @@
 export { CreateVector, ScaleMut };
 
 const CreateVector = function(v3) {
-	v3.Add = add;
 	v3.Cross = cross;
-	v3.Divide = divide;
 	v3.Dot = dot;
 	v3.Magnitude = magnitude;
 	v3.RotateAroundAxis = rotateAroundAxis;
-	v3.Scale = scale;
 	v3.Subtract = subtract;
 	v3.ToArray = toArray;
 	return v3;
 };
 
-const add = function(b) {
+const Add = function(b) {
 	const a = this;
 	return CreateVector([
 		a[0] + b[0],
@@ -38,6 +35,7 @@ const AddMut = function(b) {
 	this[2] += b[2];
 	return this;
 };
+Object.defineProperty(Array.prototype, 'Add',    { value: Add });
 Object.defineProperty(Array.prototype, 'AddMut', { value: AddMut });
 
 const cross = function(b) {
@@ -55,7 +53,7 @@ const cross = function(b) {
 	]);
 };
 
-const divide = function(m) {
+const Divide = function(m) {
 	const v = this;
 	return CreateVector([
 		v[0] / m,
@@ -63,6 +61,14 @@ const divide = function(m) {
 		v[2] / m,
 	]);
 };
+const DivideMut = function(m) {
+	this[0] /= m;
+	this[1] /= m;
+	this[2] /= m;
+	return this;
+};
+Object.defineProperty(Array.prototype, 'Divide',    { value: Divide });
+Object.defineProperty(Array.prototype, 'DivideMut', { value: DivideMut });
 
 const dot = function(b) {
 	const a = this;
@@ -105,7 +111,7 @@ const rotateAroundAxis = function(axis, theta) {
 	]);
 };
 
-const scale = function(s) {
+const Scale = function(s) {
 	const v = this;
 	return CreateVector([
 		v[0] * s,
@@ -120,6 +126,7 @@ const ScaleMut = function(s) {
 	this[2] *= s;
 	return this;
 };
+Object.defineProperty(Array.prototype, 'Scale',    { value: Scale });
 Object.defineProperty(Array.prototype, 'ScaleMut', { value: ScaleMut });
 
 const subtract = function(b) {

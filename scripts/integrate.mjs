@@ -9,39 +9,42 @@
 	
 	@license-end
 */
-export { MidpointEuler, RK4 };
+export { MidpointEulerMutDV, RK4MutDV };
 import * as M3 from "./matrices3D.mjs";
 import * as M4 from "./matrices4D.mjs";
 
-const MidpointEuler = function(getAccel, d, v, dt) {
+const MidpointEulerMutDV = function(getAccel, d, v, dt) {
 	const accel = getAccel(d);
-	const vFinal = accel.ScaleMut(dt).Add(v);
+	const vFinal = accel.ScaleMut(dt).AddMut(v);
 	
-	const deltaD = v.Add(vFinal).Divide(2.0).ScaleMut(dt);
-	const dFinal = d.Add(deltaD);
+	//I don't understand why, but Divide is measurably faster here than DivideMut
+	//maybe it's because getAccel caches Divide, and as an Array.proto method,
+	//JS has to look it up. Even still, it's called thousands of times, so why???
+	const deltaD = v.AddMut(vFinal).Divide(2.0).ScaleMut(dt);
+	const dFinal = d.AddMut(deltaD);
 
 	return [dFinal, vFinal];
 };
 
-const RK4 = function(getAccel, d, v, dt) {
+const RK4MutDV = function(getAccel, d, v, dt) {
 	const k1 = getAccel(d);//accel at start
 	
 	const v2 = v.Add( k1.Scale(dt / 2.0) );
 	const d2 = d.Add( v2.ScaleMut(dt / 2.0) );
 	const k2 = getAccel(d2);//accel in middle
 	
-	const v3 = v.Add( k2.Scale(dt / 2.0) );
-	const d3 = d.Add( v3.ScaleMut(dt / 2.0) );
+	const v3 = k2.Scale(dt / 2.0).AddMut(v);
+	const d3 = v3.ScaleMut(dt / 2.0).AddMut(d);
 	const k3 = getAccel(d3);//accel in middle if accel at start was k2
 	
-	const v4 = v.Add( k3.Scale(dt) );
-	const d4 = d.Add( v4.ScaleMut(dt) );
+	const v4 = k3.Scale(dt).AddMut(v);
+	const d4 = v4.ScaleMut(dt).AddMut(d);
 	const k4 = getAccel(d4);//accel at end if accel at start was k3
 	
-	const acceleration = (k1.Add(k2.ScaleMut(2.0)).Add(k3.ScaleMut(2.0)).Add(k4)).Divide(6.0);
+	const accel = (k1.AddMut(k2.ScaleMut(2.0)).AddMut(k3.ScaleMut(2.0)).AddMut(k4)).DivideMut(6.0);
 	
-	const vFinal = v.Add(acceleration.Scale(dt));
-	const dFinal = d.Add(v.ScaleMut(dt)).Add(acceleration.ScaleMut(dt * dt * 0.5));
+	const vFinal = accel.Scale(dt).AddMut(v);
+	const dFinal = v.ScaleMut(dt).AddMut(d).AddMut(accel.ScaleMut(dt * dt * 0.5));
 	
 	return [dFinal, vFinal];
 };

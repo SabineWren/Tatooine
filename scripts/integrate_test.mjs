@@ -9,7 +9,7 @@
 	
 	@license-end
 */
-import { RK4, MidpointEuler } from "./integrate.mjs";
+import { RK4MutDV, MidpointEulerMutDV } from "./integrate.mjs";
 import * as M3 from "./matrices3D.mjs";
 
 const getAccelSinusoid = function(d) {
@@ -17,23 +17,23 @@ const getAccelSinusoid = function(d) {
 };
 
 const EPSILON = 0.000_000_001;
-const testIntegrator = function(integrate, dt) {
+const testIntegrator = function(integrateMutDV, dt) {
 	let d = M3.CreateVector([0.0, 0.0, 0.0]);
 	let v = M3.CreateVector([1.0, 1.0, 1.0]);
 	
 	for(let t = 0.0; t + EPSILON < 2000 * Math.PI; t = t + dt) {
-		[d, v] = integrate(getAccelSinusoid, d, v, dt);
+		[d, v] = integrateMutDV(getAccelSinusoid, d, v, dt);
 	}
 	
 	return [d, v];
 };
 
 const rk4Start = Date.now();
-const [dRk, vRk] = testIntegrator(RK4, Math.PI / 1024.0);
+const [dRk, vRk] = testIntegrator(RK4MutDV, Math.PI / 1024.0);
 const rkDelta = Date.now() - rk4Start;
 
 const eulerStart = Date.now();
-const [dMe, vMe] = testIntegrator(MidpointEuler, Math.PI / (1024.0 * 7));
+const [dMe, vMe] = testIntegrator(MidpointEulerMutDV, Math.PI / (1024.0 * 7));
 const eulerDelta = Date.now() - eulerStart;
 
 console.log("  RK4: " + rkDelta + " [" + dRk[0] + ", " + dRk[1] + ", " + dRk[0] + "]");
