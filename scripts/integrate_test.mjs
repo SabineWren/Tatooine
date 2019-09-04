@@ -21,20 +21,21 @@ const testIntegrator = function(integrateMutDV, dt) {
 	let d = M3.CreateVector([0.0, 0.0, 0.0]);
 	let v = M3.CreateVector([1.0, 1.0, 1.0]);
 	
-	for(let t = 0.0; t + EPSILON < 2000 * Math.PI; t = t + dt) {
+	for(let t = 0.0; t + EPSILON < 8000 * Math.PI; t = t + dt) {
 		[d, v] = integrateMutDV(getAccelSinusoid, d, v, dt);
 	}
 	
 	return [d, v];
 };
 
+const eulerStart = Date.now();
+const [dMe, vMe] = testIntegrator(MidpointEulerMutDV, Math.PI / (1024.0 * 5.0));
+
 const rk4Start = Date.now();
 const [dRk, vRk] = testIntegrator(RK4MutDV, Math.PI / 1024.0);
-const rkDelta = Date.now() - rk4Start;
 
-const eulerStart = Date.now();
-const [dMe, vMe] = testIntegrator(MidpointEulerMutDV, Math.PI / (1024.0 * 7));
-const eulerDelta = Date.now() - eulerStart;
+const rkDelta = Date.now() - rk4Start;
+const eulerDelta = rk4Start - eulerStart;
 
 console.log("  RK4: " + rkDelta + " [" + dRk[0] + ", " + dRk[1] + ", " + dRk[0] + "]");
 console.log("MidEu: " + eulerDelta + " [" + dMe[0] + ", " + dMe[1] + ", " + dMe[0] + "]");

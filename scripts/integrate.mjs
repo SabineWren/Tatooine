@@ -29,21 +29,29 @@ const MidpointEulerMutDV = function(getAccel, d, v, dt) {
 const RK4MutDV = function(getAccel, d, v, dt) {
 	const k1 = getAccel(d);//accel at start
 	
-	const v2 = k1.Scale(dt / 2.0).AddMut(v);
+	let mut = [0, 0, 0];
+	mut[0] = k1[0]; mut[1] = k1[1]; mut[2] = k1[2];
+	const v2 = mut.ScaleMut(dt / 2.0).AddMut(v);
 	const d2 = v2.ScaleMut(dt / 2.0).AddMut(d);
 	const k2 = getAccel(d2);//accel in middle
 	
-	const v3 = k2.Scale(dt / 2.0).AddMut(v);
+	mut[0] = k2[0]; mut[1] = k2[1]; mut[2] = k2[2];
+	const v3 = mut.ScaleMut(dt / 2.0).AddMut(v);
 	const d3 = v3.ScaleMut(dt / 2.0).AddMut(d);
 	const k3 = getAccel(d3);//accel in middle if accel at start was k2
 	
-	const v4 = k3.Scale(dt).AddMut(v);
+	mut[0] = k3[0]; mut[1] = k3[1]; mut[2] = k3[2];
+	const v4 = mut.ScaleMut(dt).AddMut(v);
 	const d4 = v4.ScaleMut(dt).AddMut(d);
 	const k4 = getAccel(d4);//accel at end if accel at start was k3
 	
-	const accel = (k1.AddMut(k2.ScaleMut(2.0)).AddMut(k3.ScaleMut(2.0)).AddMut(k4)).DivideMut(6.0);
+	k2.ScaleMut(2.0);
+	k3.ScaleMut(2.0);
+	const accel = k1.AddMut(k2).AddMut(k3).AddMut(k4).DivideMut(6.0);
 	
-	const vFinal = accel.Scale(dt).AddMut(v);
+	mut = k2;//cache?? using mut without this line is slower than allocating a new array
+	mut[0] = accel[0]; mut[1] = accel[1]; mut[2] = accel[2]; 
+	const vFinal = mut.ScaleMut(dt).AddMut(v);
 	const dFinal = v.ScaleMut(dt).AddMut(d).AddMut(accel.ScaleMut(dt * dt * 0.5));
 	
 	return [dFinal, vFinal];

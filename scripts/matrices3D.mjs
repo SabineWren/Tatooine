@@ -21,21 +21,12 @@ const CreateVector = function(v3) {
 	return v3;
 };
 
-const Add = function(b) {
-	const a = this;
-	return CreateVector([
-		a[0] + b[0],
-		a[1] + b[1],
-		a[2] + b[2],
-	]);
-};
 const AddMut = function(b) {
 	this[0] += b[0];
 	this[1] += b[1];
 	this[2] += b[2];
 	return this;
 };
-Object.defineProperty(Array.prototype, 'Add',    { value: Add });
 Object.defineProperty(Array.prototype, 'AddMut', { value: AddMut });
 
 const cross = function(b) {
