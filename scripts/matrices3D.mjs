@@ -9,7 +9,7 @@
 	
 	@license-end
 */
-export { CreateVector };
+export { CreateVector, ScaleMut };
 
 const CreateVector = function(v3) {
 	v3.Add = add;
@@ -18,8 +18,8 @@ const CreateVector = function(v3) {
 	v3.Dot = dot;
 	v3.Magnitude = magnitude;
 	v3.RotateAroundAxis = rotateAroundAxis;
-	v3.Subtract = subtract;
 	v3.Scale = scale;
+	v3.Subtract = subtract;
 	v3.ToArray = toArray;
 	return v3;
 };
@@ -32,6 +32,13 @@ const add = function(b) {
 		a[2] + b[2],
 	]);
 };
+const AddMut = function(b) {
+	this[0] += b[0];
+	this[1] += b[1];
+	this[2] += b[2];
+	return this;
+};
+Object.defineProperty(Array.prototype, 'AddMut', { value: AddMut });
 
 const cross = function(b) {
 	const a = this;
@@ -106,6 +113,14 @@ const scale = function(s) {
 		v[2] * s,
 	]);
 };
+const ScaleMut = function(s) {
+	const v = this;
+	this[0] *= s;
+	this[1] *= s;
+	this[2] *= s;
+	return this;
+};
+Object.defineProperty(Array.prototype, 'ScaleMut', { value: ScaleMut });
 
 const subtract = function(b) {
 	const a = this;

@@ -17,23 +17,26 @@ const getAccelSinusoid = function(d) {
 };
 
 const EPSILON = 0.000_000_001;
-const dt = Math.PI / 32.0;
-
-const testIntegrator = function(integrate) {
+const testIntegrator = function(integrate, dt) {
 	let d = M3.CreateVector([0.0, 0.0, 0.0]);
 	let v = M3.CreateVector([1.0, 1.0, 1.0]);
 	
-	for(let t = 0.0; t + EPSILON < 20 * Math.PI; t = t + dt) {
+	for(let t = 0.0; t + EPSILON < 2000 * Math.PI; t = t + dt) {
 		[d, v] = integrate(getAccelSinusoid, d, v, dt);
 	}
 	
 	return [d, v];
 };
 
-const rk4Timer = Date.now();
-const [dRk, vRk] = testIntegrator(RK4);
-const [dMe, vMe] = testIntegrator(MidpointEuler);
-console.log("  RK4: [" + dRk[0] + ", " + dRk[1] + ", " + dRk[0] + "]");
-console.log("MidEu: [" + dMe[0] + ", " + dMe[1] + ", " + dMe[0] + "]");
+const rk4Start = Date.now();
+const [dRk, vRk] = testIntegrator(RK4, Math.PI / 1024.0);
+const rkDelta = Date.now() - rk4Start;
+
+const eulerStart = Date.now();
+const [dMe, vMe] = testIntegrator(MidpointEuler, Math.PI / (1024.0 * 7));
+const eulerDelta = Date.now() - eulerStart;
+
+console.log("  RK4: " + rkDelta + " [" + dRk[0] + ", " + dRk[1] + ", " + dRk[0] + "]");
+console.log("MidEu: " + eulerDelta + " [" + dMe[0] + ", " + dMe[1] + ", " + dMe[0] + "]");
 console.log("exact: [0.0, 0.0, 0.0]");
 

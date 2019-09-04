@@ -1,0 +1,14 @@
+Before any optimization (integrator, time in milliseconds, result):
+  RK4: 1728 [-0.004324479859109162, -0.004324479859109162, -0.004324479859109162]
+MidEu: 1780 [-0.0002752926537500928, -0.0002752926537500928, -0.0002752926537500928]
+exact:      [0.0, 0.0, 0.0]
+The code performs so poorly that the algorithmically inferior midpoint Euler smashes RK4.
+
+After ScaleMut:
+  RK4: 1348 [-0.004324479859109162, -0.004324479859109162, -0.004324479859109162]
+MidEu: 956 [-0.0002752926537500928, -0.0002752926537500928, -0.0002752926537500928]
+exact: [0.0, 0.0, 0.0]
+
++AddMut:
+
+
