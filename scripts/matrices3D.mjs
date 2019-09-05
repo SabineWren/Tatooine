@@ -9,7 +9,7 @@
 	
 	@license-end
 */
-export { Cross, Dot, Magnitude, RotateAroundAxis };
+export { Cross, Dot, Magnitude, Normalize, RotateAroundAxis };
 
 const Add = function(b) {
 	const v = this;
@@ -60,6 +60,7 @@ Object.defineProperty(Array.prototype, 'Divide',    { value: Divide });
 Object.defineProperty(Array.prototype, 'DivideMut', { value: DivideMut });
 
 const Dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+const Normalize = v => v.Scale(1.0 / Magnitude(v));
 const Magnitude = v => Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
 
 //https://en.wikipedia.org/wiki/Rodrigues'_rotation_formula
@@ -108,7 +109,7 @@ const ScaleMut = function(s) {
 Object.defineProperty(Array.prototype, 'Scale',    { value: Scale });
 Object.defineProperty(Array.prototype, 'ScaleMut', { value: ScaleMut });
 
-const Subtract = function(b) {
+const Sub = function(b) {
 	const a = this;
 	return [
 		a[0] - b[0],
@@ -116,12 +117,12 @@ const Subtract = function(b) {
 		a[2] - b[2],
 	];
 };
-const SubtractMut = function(b) {
+const SubMut = function(b) {
 	this[0] -= b[0];
 	this[1] -= b[1];
 	this[2] -= b[2];
 	return this;
 };
-Object.defineProperty(Array.prototype, 'Subtract',    { value: Subtract });
-Object.defineProperty(Array.prototype, 'SubtractMut', { value: SubtractMut });
+Object.defineProperty(Array.prototype, 'Sub',    { value: Sub });
+Object.defineProperty(Array.prototype, 'SubMut', { value: SubMut });
 
