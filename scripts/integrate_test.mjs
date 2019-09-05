@@ -18,8 +18,8 @@ const getAccelSinusoid = function(d) {
 
 const EPSILON = 0.000_000_001;
 const testIntegrator = function(integrateMutDV, dt) {
-	let d = M3.CreateVector([0.0, 0.0, 0.0]);
-	let v = M3.CreateVector([1.0, 1.0, 1.0]);
+	let d = [0.0, 0.0, 0.0];
+	let v = [1.0, 1.0, 1.0];
 	
 	for(let t = 0.0; t + EPSILON < 8000.0 * Math.PI; t = t + dt) {
 		[d, v] = integrateMutDV(getAccelSinusoid, d, v, dt);
