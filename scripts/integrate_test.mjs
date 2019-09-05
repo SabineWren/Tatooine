@@ -28,13 +28,15 @@ const testIntegrator = function(integrateMutDV, dt) {
 	return [d, v];
 };
 
-//must compute Euler first or it runs much more slowly
+const timeStep = Math.PI / Math.pow(2, 10);
+//re-using testIntegrator reduces Euler performance unless computing Euler first
+//i.e. V8 must be de-optimizing testIntegrator when calling it with Rk4
 const eulerStart = Date.now();
-const [dMe, vMe] = testIntegrator(MidpointEulerMutDV, Math.PI / (1024.0 * 5.0));
+const [dMe, vMe] = testIntegrator(MidpointEulerMutDV, timeStep / 5.0);
 const eulerDelta = Date.now() - eulerStart;
 
 const rk4Start = Date.now();
-const [dRk, vRk] = testIntegrator(RK4MutDV, Math.PI / 1024.0);
+const [dRk, vRk] = testIntegrator(RK4MutDV, timeStep);
 const rkDelta = Date.now() - rk4Start;
 
 console.log("  RK4: " + rkDelta + " [" + dRk[0] + ", " + dRk[1] + ", " + dRk[0] + "]");
