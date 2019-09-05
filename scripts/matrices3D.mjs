@@ -103,15 +103,13 @@ const rotateAroundAxis = function(axis, theta) {
 };
 
 const Scale = function(s) {
-	const v = this;
-	return CreateVector([
-		v[0] * s,
-		v[1] * s,
-		v[2] * s,
-	]);
+	return [
+		this[0] * s,
+		this[1] * s,
+		this[2] * s,
+	];
 };
 const ScaleMut = function(s) {
-	const v = this;
 	this[0] *= s;
 	this[1] *= s;
 	this[2] *= s;

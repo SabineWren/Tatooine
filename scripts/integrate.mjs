@@ -17,10 +17,7 @@ const MidpointEulerMutDV = function(getAccel, d, v, dt) {
 	const accel = getAccel(d);
 	const vFinal = accel.ScaleMut(dt).AddMut(v);
 	
-	//I don't understand why, but Divide is measurably faster here than DivideMut
-	//maybe it's because getAccel caches Divide, and as an Array.proto method,
-	//JS has to look it up. Even still, it's called thousands of times, so why???
-	const deltaD = v.AddMut(vFinal).Divide(2.0).ScaleMut(dt);
+	const deltaD = v.AddMut(vFinal).ScaleMut(dt / 2.0);
 	const dFinal = d.AddMut(deltaD);
 
 	return [dFinal, vFinal];
@@ -49,7 +46,6 @@ const RK4MutDV = function(getAccel, d, v, dt) {
 	k3.ScaleMut(2.0);
 	const accel = k1.AddMut(k2).AddMut(k3).AddMut(k4).DivideMut(6.0);
 	
-	mut = k2;//cache?? using mut without this line is slower than allocating a new array
 	mut[0] = accel[0]; mut[1] = accel[1]; mut[2] = accel[2]; 
 	const vFinal = mut.ScaleMut(dt).AddMut(v);
 	const dFinal = v.ScaleMut(dt).AddMut(d).AddMut(accel.ScaleMut(dt * dt * 0.5));
