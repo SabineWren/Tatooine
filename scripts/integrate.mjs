@@ -9,21 +9,19 @@
 	
 	@license-end
 */
-export { MidpointEulerMutDV, RK4MutDV };
+export { MidpointEulerMutV, RK4MutV };
 import * as M3 from "./matrices3D.mjs";
 import * as M4 from "./matrices4D.mjs";
 
-const MidpointEulerMutDV = function(getAccel, d, v, dt) {
+const MidpointEulerMutV = function(getAccel, d, v, dt) {
 	const accel = getAccel(d);
 	const vFinal = accel.ScaleMut(dt).AddMut(v);
 	
-	const deltaD = v.AddMut(vFinal).ScaleMut(dt / 2.0);
-	const dFinal = d.AddMut(deltaD);
-
+	const dFinal = v.AddMut(vFinal).ScaleMut(dt / 2.0).AddMut(d);
 	return [dFinal, vFinal];
 };
 
-const RK4MutDV = function(getAccel, d, v, dt) {
+const RK4MutV = function(getAccel, d, v, dt) {
 	const k1 = getAccel(d);//accel at start
 	
 	let mut = [0, 0, 0];
