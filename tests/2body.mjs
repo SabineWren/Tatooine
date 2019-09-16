@@ -41,6 +41,7 @@ const expectYearInSeconds = function() {
 const SPEED_AT_APOAPSIS = Math.sqrt(G * MASS_1 * (1.0 - eccentricity) / apoapsis);
 //https://en.wikipedia.org/wiki/Barycenter
 const centreOfMassRatio = -1.0 * mass2 / (MASS_1 + mass2);
+
 {
 	let r2 = [apoapsis, 0.0, 0.0];
 	let v2 = [0.0, -1.0, 0.0].ScaleMut(SPEED_AT_APOAPSIS);

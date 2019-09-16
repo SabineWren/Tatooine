@@ -24,7 +24,8 @@ const MidpointEulerMutV = function(getAccel, d, v, dt) {
 const RK4MutV = function(getAccel, d, v, dt) {
 	const k1 = getAccel(d);//accel at start
 	
-	let mut = [0, 0, 0];
+	//k1.slice() induces a performance hit
+	const mut = [0, 0, 0];
 	mut[0] = k1[0]; mut[1] = k1[1]; mut[2] = k1[2];
 	const v2 = mut.ScaleMut(dt / 2.0).AddMut(v);
 	const d2 = v2.ScaleMut(dt / 2.0).AddMut(d);
